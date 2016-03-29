@@ -1,0 +1,41 @@
+/**
+ +----------------+
+ | Build Settings |
+ +----------------+
+ */
+buildscript {
+    repositories {
+        flatDir dirs: "$rootProject.projectDir/gradle/plugins"
+        maven { url "$oschina_maven_central_repo_proxy" }
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath   'org.akhikhl.gretty:gretty:1.2.4',
+                    'com.ofg:uptodate-gradle-plugin:1.6.2'
+    }
+}
+
+repositories {
+        flatDir  dirs: "$rootProject.projectDir/libs"
+        maven { url "$oschina_maven_central_repo_proxy" }
+        mavenCentral()
+        jcenter()
+}
+
+apply {
+        plugin      'groovy'
+    }
+    
+dependencies {
+
+    compile     "javax.servlet:javax.servlet-api:$servlet_version",
+                "com.sun.jersey:jersey-client:$jersey_version",
+                "com.sun.jersey.contribs:jersey-apache-client4:$jersey_version"
+
+    testCompile "junit:junit:$junit_version",
+                "org.eclipse.jetty:jetty-server:$jetty_version",
+                "org.eclipse.jetty:jetty-servlet:$jetty_version"
+
+}
