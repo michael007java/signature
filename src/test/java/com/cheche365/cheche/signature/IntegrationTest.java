@@ -17,14 +17,16 @@ public class IntegrationTest extends TestCase {
     }
 
     @org.junit.Test
-    public void testIntegration() throws IOException {
-       int port =  8987;
-       try {
-           ServerApp.start(port);
-       } catch (Exception e) {
-           fail(e.getMessage());
-           e.printStackTrace();
-       }
-       ServerApp.stop();
+    public void testIntegration()  {
+        int port =  8987;
+        try {
+            ServerApp.start(port);
+            ClientApp.execute(port);
+        } catch (Exception e) {
+            fail(e.getMessage());
+            e.printStackTrace();
+        } finally {
+            ServerApp.stop();
+        }
     }
 }

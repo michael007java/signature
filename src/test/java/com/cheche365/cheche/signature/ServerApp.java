@@ -24,10 +24,7 @@ class ServerApp {
                 try {
                     ServletHandler handler = new ServletHandler();
                     server.setHandler(handler);
-
                     handler.addServletWithMapping(OrdersResource.class, "/orders/*");
-
-
                     server.start();
                     server.join();
                 } catch (Exception ex) {
@@ -36,9 +33,6 @@ class ServerApp {
             }
         }.start();
     }
-
-
-
 
     public static void stop() {
 
@@ -59,19 +53,13 @@ class ServerApp {
         @Override
         protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-            ServletPreSignRequest signRequest = new ServletPreSignRequest(request);
+            ServletPreSignRequest signRequest = new ServletPreSignRequest(new BodyReadRequestWrapper(request));
             Parameters parameters = new Parameters().readRequest(signRequest);
             Secrets secrets = new Secrets().appSecret(SignatureTest.HMAC_APP_SECRET);
 
-            try{
-                boolean valid = APISignature.verify(signRequest, parameters, secrets);
-
-                System.out.println("validate from the server side "+valid);
-            } catch (Exception e){
-                e.printStackTrace();
+            if(!APISignature.verify(signRequest, parameters, secrets)){
+                throw new IllegalArgumentException("签名校验失败");
             }
-
-
             response.setContentType("text/html");
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().println("<h1>Hello from HelloServlet</h1>");
