@@ -71,6 +71,11 @@ class MockRequest implements PreSignRequest {
         values.add(value);
     }
 
+    @Override
+    public String getEntityText() {
+        return entity.toString();
+    }
+
     public MockRequest headerValue(String name, String value) {
         addHeaderValue(name, value);
         return this;

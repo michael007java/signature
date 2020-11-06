@@ -57,8 +57,12 @@ class ServerApp {
             Parameters parameters = new Parameters().readRequest(signRequest);
             Secrets secrets = new Secrets().appSecret(SignatureTest.HMAC_APP_SECRET);
 
-            if(!APISignature.verify(signRequest, parameters, secrets)){
-                throw new IllegalArgumentException("签名校验失败");
+            try {
+                if(!APISignature.verify(signRequest, parameters, secrets)){
+                    throw new IllegalArgumentException("签名校验失败");
+                }
+            } catch (Exception e) {
+                throw new IllegalArgumentException("签名校验失败!" + e.getMessage());
             }
             response.setContentType("text/html");
             response.setStatus(HttpServletResponse.SC_OK);

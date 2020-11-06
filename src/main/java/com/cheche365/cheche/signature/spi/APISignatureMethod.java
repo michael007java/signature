@@ -13,5 +13,5 @@ public interface APISignatureMethod {
 
     String sign(String elements, Secrets secrets) ;
 
-    boolean verify(String elements, Secrets secrets, String signature) ;
+    boolean verify(String elements, Secrets secrets, String signature) throws Exception ;
 }

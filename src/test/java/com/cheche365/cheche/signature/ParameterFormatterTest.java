@@ -61,6 +61,11 @@ public class ParameterFormatterTest extends TestCase {
             public void addHeaderValue(String name, String value) throws IllegalStateException {
                 throw new UnsupportedOperationException("Not supported yet.");
             }
+
+            @Override
+            public String getEntityText() {
+                return "{\"org-country\":\"US\",\"a\":\"b\",\"org\":\"dummy\"}";
+            }
         }, new Parameters());
 
         assertEquals("a=b&org=dummy&org-country=US", normalizedParams);
@@ -107,6 +112,11 @@ public class ParameterFormatterTest extends TestCase {
             @Override
             public void addHeaderValue(String name, String value) throws IllegalStateException {
                 throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public String getEntityText() {
+                return "{\"org-country\":\"US\",\"a\":\"b\",\"org\":\"dummy\"}";
             }
         }, new Parameters());
 

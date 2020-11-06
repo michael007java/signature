@@ -9,13 +9,25 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.logging.Logger;
 
+/***************************************************************************/
+/*                              HMAC_SHA1.java                 */
+/*   文   件 名: HMAC_SHA1.java                                  */
+/*   模  块： 车险ToB平台                                                */
+/*   功  能:  车车api签名实现算法                            */
+/*   初始创建:2015/5/16                                            */
+/*   版本更新:V1.0                                                         */
+/*   版权所有:北京车与车科技有限公司                                       */
+/***************************************************************************/
 
 /**
  * Created by zhengwei on 5/16/15.
  */
 
 public class HMAC_SHA1 implements APISignatureMethod {
+
+    private static final Logger LOGGER = Logger.getLogger(HMAC_SHA1.class.getName());
 
     public static final String NAME = "HMAC-SHA1";
 
@@ -60,12 +72,22 @@ public class HMAC_SHA1 implements APISignatureMethod {
             throw new IllegalStateException(ike);
         }
 
-        return Base64.encode(mac.doFinal(elements.getBytes()));
+        String sign = Base64.encode(mac.doFinal(elements.getBytes()));
+        LOGGER.info(" sign result : " + sign);
+        return sign;
     }
 
     @Override
-    public boolean verify(String elements, Secrets secrets, String signature) {
-        return sign(elements, secrets).equals(signature);
+    public boolean verify(String elements, Secrets secrets, String signature) throws Exception {
+        LOGGER.info("verify signature : " + signature);
+        String calculateSign = sign(elements, secrets);
+        LOGGER.info("signature elements : " + elements);
+        LOGGER.info("calculate signature : " + calculateSign);
+        boolean result = calculateSign.equals(signature);
+        if (!result) {
+            LOGGER.severe("数字验签失败，elements：" + elements + "；secrets：" + secrets + "；signature：" + signature);
+        }
+        return result;
     }
 }
 

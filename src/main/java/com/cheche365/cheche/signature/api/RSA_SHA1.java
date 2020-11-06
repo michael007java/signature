@@ -17,6 +17,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -111,7 +112,7 @@ public class RSA_SHA1 implements APISignatureMethod {
     }
 
     @Override
-    public boolean verify(String elements, Secrets secrets, String signature) throws InvalidSecretException {
+    public boolean verify(String elements, Secrets secrets, String signature) throws Exception {
 
         Signature sig;
 
@@ -124,9 +125,9 @@ public class RSA_SHA1 implements APISignatureMethod {
 
         RSAPublicKey rsaPubKey = null;
 
-        String tmpkey = secrets.getAppSecret();
-        if (tmpkey.startsWith(BEGIN_CERT)) {
-            try {
+        String pubKey = secrets.getAppSecret();
+        /*if (tmpkey.startsWith(BEGIN_CERT)) {
+           *//* try {
                 Certificate cert = null;
                 ByteArrayInputStream bais = new ByteArrayInputStream(tmpkey.getBytes());
                 BufferedInputStream bis = new BufferedInputStream(bais);
@@ -139,10 +140,13 @@ public class RSA_SHA1 implements APISignatureMethod {
                 Logger.getLogger(RSA_SHA1.class.getName()).log(Level.SEVERE, null, ex);
             } catch (CertificateException ex) {
                 Logger.getLogger(RSA_SHA1.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-        }
+            }*//*
 
+        }*/
+            byte[] keyBytes = Base64.decode(pubKey);
+            X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            rsaPubKey = (RSAPublicKey)keyFactory.generatePublic(spec);
 
         byte[] decodedSignature;
 
