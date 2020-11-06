@@ -11,6 +11,8 @@ import com.sun.jersey.api.client.filter.ClientFilter;
 import javax.ws.rs.ext.Providers;
 import java.util.UUID;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * Created by zhengwei on 1/7/16.
  */
@@ -18,7 +20,12 @@ public class ClientSignatureFilter extends ClientFilter {
 
     private final Providers providers;
     private final Parameters parameters;
-    final Secrets secrets;
+    private final Secrets secrets;
+
+
+    public ClientSignatureFilter(Parameters parameters, Secrets secrets) {
+        this(null, parameters, secrets);
+    }
 
     public ClientSignatureFilter(final Providers providers, final Parameters parameters, final Secrets secrets) {
         this.providers = providers;
@@ -28,9 +35,10 @@ public class ClientSignatureFilter extends ClientFilter {
 
     @Override
     public ClientResponse handle(ClientRequest request) throws ClientHandlerException {
-        if (providers == null || parameters == null || secrets == null) {
-            throw new NullPointerException();
-        }
+        requireNonNull(providers, "providers should not be null");
+        requireNonNull(parameters, "parameters should not be null");
+        requireNonNull(secrets, "secrets should not be null");
+
         setHeaderMsgId(request);
         APISignature.sign(new RequestWrapper(request, providers), parameters, secrets);
         return getNext().handle(request);
@@ -39,7 +47,6 @@ public class ClientSignatureFilter extends ClientFilter {
     private void setHeaderMsgId(ClientRequest request) {
         String uuid = UUID.randomUUID().toString().replace("-", "");
         request.getHeaders().add("MsgId", uuid);
-
     }
 
 }

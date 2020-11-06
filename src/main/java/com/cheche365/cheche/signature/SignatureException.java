@@ -6,12 +6,17 @@ public class SignatureException extends RuntimeException{
         super();
     }
 
-    public SignatureException(String s) {
-        super(s);
+    public SignatureException(String message) {
+        super(message);
     }
 
     public SignatureException(Throwable cause) {
         super(cause);
     }
+
+    public SignatureException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }
 

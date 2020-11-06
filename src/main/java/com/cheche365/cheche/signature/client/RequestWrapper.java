@@ -1,11 +1,16 @@
 package com.cheche365.cheche.signature.client;
 
+import com.cheche365.cheche.signature.SignatureException;
 import com.cheche365.cheche.signature.spi.PreSignRequest;
 import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Providers;
+import java.io.ByteArrayOutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -14,6 +19,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
 public class RequestWrapper implements PreSignRequest {
 
@@ -81,5 +89,35 @@ public class RequestWrapper implements PreSignRequest {
     public void addHeaderValue(final String name, final String value) {
         clientRequest.getHeaders().add(name, value);
     }
+
+    @Override
+    public String getEntityText() {
+        if (getEntity() != null) {
+            try(ByteArrayOutputStream baos = new ByteArrayOutputStream(2048)) {
+                Object entity = getEntity();
+                Class bodyType = entity.getClass();
+                Type genericType = bodyType;
+                if (entity instanceof GenericEntity) {
+                    genericType = ((GenericEntity) entity).getType();
+                }
+                providers.getMessageBodyWriter(
+                    bodyType, genericType, new Annotation[0], APPLICATION_JSON_TYPE
+                ).writeTo(entity,
+                    bodyType,
+                    bodyType,
+                    new Annotation[0],
+                    APPLICATION_JSON_TYPE,
+                    clientRequest.getHeaders(),
+                    baos
+                );
+                return new String(baos.toByteArray(), UTF_8);
+            } catch (Exception e) {
+                throw new SignatureException("利用Jersey机制获取实体文本失败", e);
+            }
+        } else {
+            return "";
+        }
+    }
+
 }
 

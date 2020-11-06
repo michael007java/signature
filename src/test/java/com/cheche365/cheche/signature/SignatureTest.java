@@ -113,6 +113,8 @@ public class SignatureTest extends TestCase {
             assertTrue(APISignature.verify(request, params, secrets)); //验签
         } catch (SignatureException se) {
             fail(se.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     
@@ -159,6 +161,8 @@ public class SignatureTest extends TestCase {
         }
         catch (SignatureException se) {
             fail(se.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

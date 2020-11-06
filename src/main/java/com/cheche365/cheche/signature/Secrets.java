@@ -21,5 +21,11 @@ public class Secrets {
     	setAppSecret(consumerSecret);
     	return this;
     }
+
+    @Override
+    public String toString() {
+        return appSecret;
+    }
+
 }
 

@@ -26,4 +26,7 @@ public interface PreSignRequest {
     Object getEntity();
 
     void addHeaderValue(String name, String value) throws IllegalStateException;
+
+    String getEntityText();
+
 }

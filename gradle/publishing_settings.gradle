@@ -1,0 +1,34 @@
+apply {
+    // built-in plugins
+    plugin      'maven-publish'
+}
+
+def nexusUrl = cheche365_repo_releases
+if (version.endsWith("-SNAPSHOT")) {
+    nexusUrl = cheche365_repo_snapshots
+}
+
+task sourcesJar(type: Jar) {
+    classifier "sources"
+    from sourceSets.main.allSource
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId group_id
+            artifactId "cheche365-${rootProject.name}-${project.name}"
+            from components.java
+            artifact sourcesJar
+        }
+    }
+    repositories {
+        maven {
+            url nexusUrl
+            credentials {
+                username System.getProperty('repo.username')
+                password System.getProperty('repo.password')
+            }
+        }
+    }
+}

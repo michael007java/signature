@@ -1,0 +1,12 @@
+dependencies {
+    compile "org.codehaus.groovy:groovy:$groovy_version",
+            "org.codehaus.groovy:groovy-cli-commons:$groovy_version",
+            "org.codehaus.groovy:groovy-datetime:$groovy_version",
+            "org.codehaus.groovy:groovy-dateutil:$groovy_version",
+            "org.codehaus.groovy:groovy-jmx:$groovy_version",
+            "org.codehaus.groovy:groovy-json:$groovy_version",
+            "org.codehaus.groovy:groovy-nio:$groovy_version",
+            "org.codehaus.groovy:groovy-templates:$groovy_version",
+            "org.codehaus.groovy:groovy-xml:$groovy_version",
+            "org.codehaus.groovy:groovy-sql:$groovy_version"
+}

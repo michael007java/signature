@@ -1,7 +1,6 @@
 package com.cheche365.cheche.signature.api;
 
 import com.cheche365.cheche.signature.spi.PreSignRequest;
-import com.sun.jersey.api.uri.UriComponent;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
@@ -10,10 +9,12 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static java.util.Collections.singletonList;
+import static java.util.Optional.ofNullable;
 
 /**
  * Created by zhengwei on 12/20/15.
@@ -37,7 +38,7 @@ public class ServletPreSignRequest implements PreSignRequest {
         try {
             return new URL(request.getRequestURL().toString());
         } catch (MalformedURLException e) {
-            throw new IllegalStateException("URL 格式错误，"+request.getRequestURL().toString(), e);
+            throw new IllegalStateException("URL 格式错误，" + request.getRequestURL().toString(), e);
         }
     }
 
@@ -45,9 +46,9 @@ public class ServletPreSignRequest implements PreSignRequest {
     public Set<String> getParameterNames() {
         Set<String> set = new HashSet<>();
         String queryString = request.getQueryString();
-        if(null != queryString && !"".equals(queryString)) {
+        if (null != queryString && !"".equals(queryString)) {
             String[] queryValues = queryString.split("&");
-            for(String q : queryValues) {
+            for (String q : queryValues) {
                 set.add(q.substring(0, q.indexOf("=")));
             }
         }
@@ -61,42 +62,44 @@ public class ServletPreSignRequest implements PreSignRequest {
 
     @Override
     public List<String> getHeaderValues(String name) {
-        return null==request.getHeader(name) ? null : Arrays.asList(new String[]{request.getHeader(name)});
+        return null == request.getHeader(name) ? null : singletonList(request.getHeader(name));
     }
 
     @Override
     public Object getEntity() {
         Object obj = null;
-        ByteArrayOutputStream baos = null;
-        try {
-            baos = new ByteArrayOutputStream();
+        try(ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             InputStream is = request.getInputStream();
             byte[] buf = new byte[512];
-            int len ;
-            while((len = is.read(buf)) != -1) {
+            int len;
+            while ((len = is.read(buf)) != -1) {
                 baos.write(buf, 0, len);
                 baos.flush();
             }
             obj = new String(baos.toByteArray(), StandardCharsets.UTF_8);
-        }catch(IOException ex) {
+        } catch (IOException ex) {
             ex.printStackTrace();
-        }finally {
-            if(baos != null) {
-                try {
-                    baos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         return obj;
     }
 
 
-    //sever端在验证签名的时候不需要修改header，只需要读取并校验。
+    /**
+     * sever端在验证签名的时候不需要修改header，只需要读取并校验。
+     *
+     * @param name
+     * @param value
+     * @throws IllegalStateException
+     */
     @Override
     public void addHeaderValue(String name, String value) throws IllegalStateException {
         throw new UnsupportedOperationException("Server端不支持验证签名时修改request header");
 
     }
+
+    @Override
+    public String getEntityText() {
+        return ofNullable(getEntity()).map(String::valueOf).orElse("");
+    }
+
 }
