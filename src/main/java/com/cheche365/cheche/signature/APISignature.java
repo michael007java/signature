@@ -63,13 +63,13 @@ public class APISignature {
         return signParamText;
     }
 
-    private static URI constructRequestUri(PreSignRequest request, Parameters.Version version) throws SignatureException {
+    private static String constructRequestUri(PreSignRequest request, Parameters.Version version) throws SignatureException {
+        StringBuilder buf = new StringBuilder();
         try {
             URL url = request.getRequestURL();
             if (url == null) {
                 throw new SignatureException("请求不包含URL");
             }
-            StringBuilder buf = new StringBuilder();
             if (VERSION_1_0 == version) {
                 buf.append(url.getProtocol()).append("://");
             }
@@ -79,10 +79,10 @@ public class APISignature {
                 buf.append(':').append(port);
             }
             buf.append(url.getPath());
-            return new URI(buf.toString());
+            return new URI(buf.toString()).toASCIIString();
 
         } catch (URISyntaxException mue) {
-            throw new SignatureException("构造请求URL失败", mue);
+            return buf.toString();
         }
     }
 
@@ -93,7 +93,7 @@ public class APISignature {
         try {
             logger.info("request body : " + request.getEntity());
 
-            buf.append('&').append(constructRequestUri(request,getByVersionNo(params.getVersion())).toASCIIString());
+            buf.append('&').append(constructRequestUri(request,getByVersionNo(params.getVersion())));
             buf.append('&').append(URLEncoder.encode(normalizeParameters(request, params), "UTF-8"));
 
             logger.info("request body is null : " + (request.getEntity() == null));

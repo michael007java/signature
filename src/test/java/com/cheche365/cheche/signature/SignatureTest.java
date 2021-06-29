@@ -21,9 +21,9 @@ public class SignatureTest extends TestCase {
     public static final String APP_ID = "dpf43f3p2l4k3l03";
     public static final String HMAC_APP_SECRET = "kd94hf93k423kf44";
     public static final String SIGNATURE_METHOD = HMAC_SHA1.NAME;
-    public static final String VERSION = "1.0";
+    public static final String VERSION = "2.0";
 
-    public static final String HMAC_SIGNATURE = "Dr/gekCNJ94JLvRAcegeG2nrpvI=";
+    public static final String HMAC_SIGNATURE = "xUSzWjCtVh2A8NyGpbvt4V1K6Ig=";
 
     public static final String RSA_PRIVATE_KEY =
             "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBALRiMLAh9iimur8V" +
